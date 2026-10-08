@@ -1,0 +1,361 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Approved public restaurant feed v1",
+  "description": "Compatible with travel v1 public restaurant_id/destination_ids/nearby_spot_ids; no raw source URL or IDs.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "generated_at",
+    "restaurants"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "generated_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "restaurants": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/restaurant"
+      }
+    }
+  },
+  "$defs": {
+    "restaurant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "restaurant_id",
+        "name",
+        "area",
+        "destination_ids",
+        "cuisine_tags",
+        "business_status",
+        "last_verified_at",
+        "attribution"
+      ],
+      "properties": {
+        "restaurant_id": {
+          "type": "string",
+          "pattern": "^rst_[a-zA-Z0-9_-]{6,80}$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 130
+        },
+        "area": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "sido",
+            "sigungu"
+          ],
+          "properties": {
+            "sido": {
+              "type": "string"
+            },
+            "sigungu": {
+              "type": "string"
+            },
+            "sido_code": {
+              "type": "string"
+            },
+            "sigungu_code": {
+              "type": "string"
+            }
+          }
+        },
+        "destination_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        },
+        "nearby_spot_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        },
+        "address_summary": {
+          "type": "string",
+          "maxLength": 250
+        },
+        "cuisine_tags": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        },
+        "business_status": {
+          "enum": [
+            "registered_active",
+            "registered_closed",
+            "unknown"
+          ]
+        },
+        "last_verified_at": {
+          "type": "string",
+          "format": "date"
+        },
+        "attribution": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        },
+        "status_alert": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "message",
+            "verified_at"
+          ],
+          "properties": {
+            "kind": {
+              "enum": [
+                "closed_confirmed",
+                "relocated_confirmed"
+              ]
+            },
+            "message": {
+              "type": "string",
+              "minLength": 1
+            },
+            "verified_at": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        },
+        "parking": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "official": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "availability",
+                "description",
+                "verified_at"
+              ],
+              "properties": {
+                "availability": {
+                  "enum": [
+                    "on_site",
+                    "partner",
+                    "not_available",
+                    "unknown"
+                  ]
+                },
+                "description": {
+                  "type": "string"
+                },
+                "verified_at": {
+                  "type": "string",
+                  "format": "date"
+                }
+              }
+            },
+            "visitor_reports": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "location_label",
+                  "visited_at"
+                ],
+                "properties": {
+                  "location_label": {
+                    "type": "string"
+                  },
+                  "note": {
+                    "type": "string"
+                  },
+                  "visited_at": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "walk_minutes": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 240
+                  }
+                }
+              }
+            }
+          }
+        },
+        "broadcasts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "program",
+              "aired_on",
+              "sponsored"
+            ],
+            "properties": {
+              "program": {
+                "type": "string"
+              },
+              "episode": {
+                "type": "string"
+              },
+              "aired_on": {
+                "type": "string",
+                "format": "date"
+              },
+              "sponsored": {
+                "enum": [
+                  "yes",
+                  "no",
+                  "unknown"
+                ]
+              }
+            }
+          }
+        },
+        "celebrity_mentions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "person",
+              "kind",
+              "verified_at"
+            ],
+            "properties": {
+              "person": {
+                "type": "string"
+              },
+              "kind": {
+                "enum": [
+                  "visited",
+                  "recommended",
+                  "mentioned"
+                ]
+              },
+              "verified_at": {
+                "type": "string",
+                "format": "date"
+              }
+            }
+          }
+        },
+        "review_metrics": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "provider",
+              "metric_label",
+              "count",
+              "observed_at"
+            ],
+            "properties": {
+              "provider": {
+                "enum": [
+                  "naver",
+                  "kakao",
+                  "first_party"
+                ]
+              },
+              "metric_label": {
+                "type": "string"
+              },
+              "count": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "observed_at": {
+                "type": "string",
+                "format": "date"
+              }
+            }
+          }
+        },
+        "rating": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "provider",
+            "score",
+            "out_of",
+            "observed_at"
+          ],
+          "properties": {
+            "provider": {
+              "enum": [
+                "naver",
+                "kakao",
+                "first_party"
+              ]
+            },
+            "score": {
+              "type": "number",
+              "minimum": 0
+            },
+            "out_of": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "observed_at": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        },
+        "history": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "date",
+              "kind",
+              "description"
+            ],
+            "properties": {
+              "date": {
+                "type": "string",
+                "format": "date"
+              },
+              "kind": {
+                "enum": [
+                  "opened",
+                  "temporarily_closed",
+                  "closed_confirmed",
+                  "relocated_confirmed",
+                  "renamed_confirmed",
+                  "reopened"
+                ]
+              },
+              "description": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
