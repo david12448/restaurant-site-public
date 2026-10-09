@@ -1,0 +1,272 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Approved recipe feed for food+restaurant site v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "generated_at",
+    "recipes"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "generated_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "recipes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/recipe"
+      }
+    }
+  },
+  "$defs": {
+    "recipe": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "recipe_id",
+        "dish_id",
+        "title",
+        "cuisine_regions",
+        "origin_countries",
+        "category",
+        "servings",
+        "prep_minutes",
+        "cook_minutes",
+        "difficulty",
+        "ingredients",
+        "steps",
+        "publication_kind",
+        "source_credit",
+        "last_verified_at"
+      ],
+      "properties": {
+        "recipe_id": {
+          "type": "string",
+          "pattern": "^rcp_[a-zA-Z0-9_-]{6,80}$"
+        },
+        "dish_id": {
+          "type": "string",
+          "pattern": "^dish_[a-zA-Z0-9_-]{5,80}$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "original_name": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 400
+        },
+        "cuisine_regions": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 2
+          }
+        },
+        "origin_countries": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 2
+          }
+        },
+        "category": {
+          "type": "string",
+          "minLength": 1
+        },
+        "servings": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "prep_minutes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1440
+        },
+        "cook_minutes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1440
+        },
+        "difficulty": {
+          "enum": [
+            "easy",
+            "medium",
+            "advanced"
+          ]
+        },
+        "ingredients": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "name"
+            ],
+            "properties": {
+              "name": {
+                "type": "string",
+                "minLength": 1
+              },
+              "amount": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              },
+              "unit": {
+                "type": "string"
+              },
+              "note": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "steps": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "order",
+              "instruction"
+            ],
+            "properties": {
+              "order": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "instruction": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
+        "publication_kind": {
+          "enum": [
+            "official_source",
+            "adaptation",
+            "broadcast_inspired",
+            "editorial_original"
+          ]
+        },
+        "source_credit": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "provider",
+            "license_verified",
+            "verified_at"
+          ],
+          "properties": {
+            "provider": {
+              "type": "string",
+              "minLength": 2
+            },
+            "license_verified": {
+              "const": true
+            },
+            "verified_at": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        },
+        "last_verified_at": {
+          "type": "string",
+          "format": "date"
+        },
+        "associated_restaurant_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^rst_[a-zA-Z0-9_-]{6,80}$"
+          }
+        },
+        "broadcast_mentions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "program",
+              "relation",
+              "verified_at"
+            ],
+            "properties": {
+              "program": {
+                "type": "string",
+                "minLength": 2
+              },
+              "relation": {
+                "enum": [
+                  "featured_recipe",
+                  "inspired_by",
+                  "dish_appeared"
+                ]
+              },
+              "verified_at": {
+                "type": "string",
+                "format": "date"
+              },
+              "episode": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "youtube_videos": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "video_id",
+              "title",
+              "channel",
+              "verified_at"
+            ],
+            "properties": {
+              "video_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9_-]{11}$"
+              },
+              "title": {
+                "type": "string",
+                "minLength": 1
+              },
+              "channel": {
+                "type": "string",
+                "minLength": 1
+              },
+              "verified_at": {
+                "type": "string",
+                "format": "date"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
