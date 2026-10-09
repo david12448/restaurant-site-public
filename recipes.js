@@ -97,7 +97,7 @@ function populateRecipe(r,servings){
   const control=node("div",null,"serve-control");
   control.appendChild(node("label","인분 조절"));
   const choice=node("select");choice.setAttribute("aria-label","인분 선택");
-  const portions=unique([1,2,3,4,6,r.servings]);
+  const portions=[...new Set([1,2,3,4,6,r.servings])].sort((a,b)=>a-b);
   portions.forEach(x=>{const option=node("option",x+"인분");option.value=String(x);if(x===servings)option.selected=true;choice.appendChild(option)});
   choice.addEventListener("change",()=>populateRecipe(r,Number(choice.value)));
   control.appendChild(choice);ingredients.appendChild(control);
