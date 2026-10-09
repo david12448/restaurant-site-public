@@ -17,3 +17,10 @@
 - `recipe_id`(조리법), `dish_id`(음식 개념), `restaurant_id`(식당)을 별도 유지하고 방송 소개를 레시피 완전 공개로 착각하지 않는다.
 - 공식 방송 레시피 vs 방송 참고 레시피/독자 창작을 구별, 단계·계량·인분 검증, 유튜브 metadata/링크만 적법하게 활용.
 - 소스 코드는 `docs/RECIPE_UI_AND_SOURCES.md`, schema `schema/recipe-feed.v1.schema.json` 확인, `python scripts/validate_recipes.py`로 게시 전 검사.
+
+## 레시피 세계 음식·편의점 카테고리 확장
+- `data/recipe-taxonomy.json`를 기준으로 여섯 대분류(food_group)와 세부분류(food_subgroup), 퓨전·변형 style_tags, 조리방식 preparation_methods를 독립 분류.
+- 국내/해외/비교 source_credit.source_country 및 cross_references는 문화권 cuisine_regions와 다른 개념.
+- 기존 v1 구조 호환을 위해 새 필드는 optional이지만 신규 조리법 편집은 food_group 작성. 제품 조합 기록은 convenience_combo 전용, 2개 이상 확인된 상품 요구.
+- 상품 변동, 가열/보관 포장 지침, 알레르기 주의, 원문 권한; 검색 유무·브랜드 출처만으로 실제 조합 조리법을 만들어내지 않는다.
+- CSS/JS 기능 변경 후 node --check, Python 회귀 검사, PR CI 및 main 검증. 공개 approved records는 현재 0건.
