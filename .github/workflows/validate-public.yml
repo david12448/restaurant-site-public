@@ -16,9 +16,11 @@ jobs:
           python-version: '3.12'
       - run: python -m unittest discover -s tests -v
       - run: python scripts/validate_public.py
+      - run: python scripts/validate_cafes.py
       - run: python scripts/validate_recipes.py
       - run: node --check app.js
       - run: node --check recipes.js
+      - run: node --check cafes.js
       - run: |
           test -f index.html
           test -f app.js

@@ -1,0 +1,217 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Verified public cafe offer index v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "generated_at",
+    "offers"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "generated_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "offers": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/offer"
+      }
+    }
+  },
+  "$defs": {
+    "offer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "offer_id",
+        "brand_ids",
+        "title",
+        "kind",
+        "provider",
+        "starts_on",
+        "ends_on",
+        "checked_on",
+        "terms",
+        "availability",
+        "audience",
+        "stacking",
+        "source_type",
+        "verified"
+      ],
+      "properties": {
+        "offer_id": {
+          "type": "string",
+          "pattern": "^caf_[A-Za-z0-9_-]{8,80}$"
+        },
+        "brand_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^cafe_[a-z0-9]+$"
+          }
+        },
+        "title": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 150
+        },
+        "kind": {
+          "enum": [
+            "discount",
+            "coupon",
+            "payment",
+            "subscription",
+            "card",
+            "loyalty",
+            "merch",
+            "menu_launch",
+            "telecom"
+          ]
+        },
+        "provider": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 100
+        },
+        "starts_on": {
+          "type": "string",
+          "format": "date"
+        },
+        "ends_on": {
+          "type": "string",
+          "format": "date"
+        },
+        "checked_on": {
+          "type": "string",
+          "format": "date"
+        },
+        "terms": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 20,
+          "items": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 360
+          }
+        },
+        "availability": {
+          "enum": [
+            "nationwide",
+            "selected_stores",
+            "online_only",
+            "unknown"
+          ]
+        },
+        "audience": {
+          "enum": [
+            "general",
+            "new_user",
+            "members",
+            "targeted",
+            "unknown"
+          ]
+        },
+        "stacking": {
+          "enum": [
+            "allowed",
+            "blocked",
+            "unknown"
+          ]
+        },
+        "source_type": {
+          "enum": [
+            "brand_official",
+            "card_official",
+            "payment_official",
+            "telecom_official"
+          ]
+        },
+        "verified": {
+          "const": true
+        },
+        "value": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "method",
+            "amount"
+          ],
+          "properties": {
+            "method": {
+              "enum": [
+                "percent",
+                "fixed",
+                "points",
+                "none"
+              ]
+            },
+            "amount": {
+              "type": "number",
+              "minimum": 0
+            },
+            "max_discount_krw": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "min_payment_krw": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "subscription_fee_krw": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "per_use_limit": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        },
+        "availability_note": {
+          "type": "string",
+          "maxLength": 300
+        },
+        "coupon_issue_from": {
+          "type": "string",
+          "format": "date"
+        },
+        "coupon_issue_until": {
+          "type": "string",
+          "format": "date"
+        },
+        "requires_opt_in": {
+          "type": "boolean"
+        },
+        "requires_app": {
+          "type": "boolean"
+        },
+        "while_supplies_last": {
+          "type": "boolean"
+        },
+        "financial_refs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^(card|payment|telecom):"
+          }
+        },
+        "source_token": {
+          "type": "string",
+          "pattern": "^src_[A-Za-z0-9_-]{8,80}$"
+        }
+      }
+    }
+  }
+}

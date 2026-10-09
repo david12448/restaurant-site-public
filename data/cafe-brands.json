@@ -1,0 +1,132 @@
+{
+  "schema_version": "1.0",
+  "brands": [
+    {
+      "brand_id": "cafe_starbucks",
+      "name": "스타벅스",
+      "aliases": [
+        "스타벅스코리아",
+        "Starbucks"
+      ]
+    },
+    {
+      "brand_id": "cafe_pascucci",
+      "name": "파스쿠찌",
+      "aliases": [
+        "파스구치",
+        "파스쿠치",
+        "Pascucci"
+      ]
+    },
+    {
+      "brand_id": "cafe_coffeebean",
+      "name": "커피빈",
+      "aliases": [
+        "커피빈스",
+        "커피빈앤티리프",
+        "Coffee Bean"
+      ]
+    },
+    {
+      "brand_id": "cafe_twosome",
+      "name": "투썸플레이스",
+      "aliases": [
+        "투썸",
+        "A Twosome Place"
+      ]
+    },
+    {
+      "brand_id": "cafe_mega",
+      "name": "메가MGC커피",
+      "aliases": [
+        "메가",
+        "메가커피",
+        "메가MGC"
+      ]
+    },
+    {
+      "brand_id": "cafe_compose",
+      "name": "컴포즈커피",
+      "aliases": [
+        "컴포즈",
+        "Compose Coffee"
+      ]
+    },
+    {
+      "brand_id": "cafe_theventi",
+      "name": "더벤티",
+      "aliases": [
+        "벤티",
+        "The Venti"
+      ]
+    },
+    {
+      "brand_id": "cafe_ediya",
+      "name": "이디야커피",
+      "aliases": [
+        "이디야",
+        "EDIYA"
+      ]
+    },
+    {
+      "brand_id": "cafe_paik",
+      "name": "빽다방",
+      "aliases": [
+        "백다방",
+        "Paik's Coffee"
+      ]
+    },
+    {
+      "brand_id": "cafe_hollys",
+      "name": "할리스",
+      "aliases": [
+        "할리스커피",
+        "Hollys"
+      ]
+    },
+    {
+      "brand_id": "cafe_angelinus",
+      "name": "엔제리너스",
+      "aliases": [
+        "Angelinus"
+      ]
+    },
+    {
+      "brand_id": "cafe_paulbassett",
+      "name": "폴바셋",
+      "aliases": [
+        "Paul Bassett"
+      ]
+    },
+    {
+      "brand_id": "cafe_mammoth",
+      "name": "매머드커피",
+      "aliases": [
+        "매머드익스프레스",
+        "Mammoth Coffee"
+      ]
+    },
+    {
+      "brand_id": "cafe_tomntoms",
+      "name": "탐앤탐스",
+      "aliases": [
+        "Tom N Toms"
+      ]
+    },
+    {
+      "brand_id": "cafe_gongcha",
+      "name": "공차",
+      "aliases": [
+        "Gong cha"
+      ]
+    },
+    {
+      "brand_id": "cafe_tenpercent",
+      "name": "텐퍼센트커피",
+      "aliases": [
+        "텐퍼센트",
+        "Ten Percent Coffee"
+      ]
+    }
+  ]
+}
