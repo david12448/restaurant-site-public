@@ -13,6 +13,10 @@ const kinds={
   broadcast_inspired:"방송 영감 레시피",editorial_original:"자체 작성 레시피"
 };
 const difficulty={easy:"쉬움",medium:"보통",advanced:"숙련"};
+const groupLabels={meal:"요리·식사",bread_baking:"빵·베이킹",dessert:"초콜릿·디저트",frozen_dessert:"아이스크림·빙수",beverage:"음료",convenience_combo:"편의점 꿀조합"};
+const styleLabels={traditional:"전통 음식",fusion:"퓨전",remix:"변형·응용",home_style:"가정식",quick_easy:"간편식",convenience:"편의점 조합"};
+let taxonomy=null;
+const foodGroup=(r)=>r.food_group||"meal";
 const params=new URLSearchParams(location.search);
 if(params.get("embed")==="1")document.body.classList.add("embed");
 function node(tag,text,cls){
@@ -30,16 +34,50 @@ function fill(selectId,options,defaultLabel){
 }
 function setupFilters(){
   const regionCodes=unique(catalog.recipes.flatMap(r=>r.cuisine_regions||[]));
-  const cats=unique(catalog.recipes.map(r=>r.category).filter(Boolean));
   fill("recipe-region",regionCodes.map(code=>[code,regions[code]||code]),"전 세계");
-  fill("recipe-category",cats.map(v=>[v,v]),"모든 종류");
+  const groups=(taxonomy?.groups||Object.entries(groupLabels).map(([id,label])=>({id,label,subgroups:[]})));
+  fill("recipe-group",groups.map(g=>[g.id,g.label]),"전체 레시피");
+  fill("recipe-style",(taxonomy?.style_tags||Object.entries(styleLabels).map(([id,label])=>({id,label}))).map(v=>[v.id,v.label]),"전체 스타일");
+  renderShortcuts(groups);
+  fillCategories();
+}
+function fillCategories(){
+  const group=$("recipe-group").value;
+  const values=unique(catalog.recipes.filter(r=>!group||foodGroup(r)===group).map(r=>r.category).filter(Boolean));
+  fill("recipe-category",values.map(v=>[v,v]),"전체 종류");
+}
+function renderShortcuts(groups){
+  const panel=$("recipe-shortcuts");panel.replaceChildren();
+  const options=[{id:"",label:"전체 보기"},...groups];
+  options.forEach(item=>{
+    const b=node("button",item.label,"recipe-shortcut");b.type="button";b.dataset.group=item.id;
+    b.setAttribute("aria-pressed",String($("recipe-group").value===item.id));
+    b.addEventListener("click",()=>{
+      $("recipe-group").value=item.id;
+      fillCategories();render();
+    });panel.appendChild(b);
+  });
+}
+function syncShortcuts(){
+  document.querySelectorAll("#recipe-shortcuts button").forEach(b=>
+    b.setAttribute("aria-pressed",String(b.dataset.group===$("recipe-group").value)));
+}
+function hasSourceScope(r,scope){
+  if(!scope)return true;
+  const countries=[r.source_credit?.source_country,...(r.cross_references||[]).map(v=>v.source_country)].filter(Boolean);
+  const korean=countries.includes("KR"), foreign=countries.some(v=>v!=="KR");
+  return scope==="korean"?korean:scope==="foreign"?foreign:(korean&&foreign);
 }
 function matches(r){
   const q=$("recipe-keyword").value.trim().toLocaleLowerCase("ko");
-  const phrase=[r.title,r.original_name,r.description,...(r.ingredients||[]).map(i=>i.name)].filter(Boolean).join(" ").toLocaleLowerCase("ko");
+  const phrase=[r.title,r.original_name,r.description,...(r.ingredients||[]).map(i=>i.name),
+    ...(r.combo_products||[]).flatMap(c=>[c.product_name,c.brand||""])].filter(Boolean).join(" ").toLocaleLowerCase("ko");
   if(q&&!phrase.includes(q))return false;
+  if($("recipe-group").value&&foodGroup(r)!==$("recipe-group").value)return false;
   if($("recipe-region").value&&!(r.cuisine_regions||[]).includes($("recipe-region").value))return false;
   if($("recipe-category").value&&r.category!==$("recipe-category").value)return false;
+  if($("recipe-style").value&&!(r.style_tags||[]).includes($("recipe-style").value))return false;
+  if(!hasSourceScope(r,$("recipe-source").value))return false;
   const max=Number($("recipe-minutes").value);
   if(max&&r.prep_minutes+r.cook_minutes>max)return false;
   const media=$("recipe-media").value;
@@ -52,7 +90,7 @@ function recipeCard(r){
   append(article,node("h3",r.title),
       node("p",[...r.cuisine_regions.map(code=>regions[code]||code),r.category].join(" · "),"meta"));
   const tags=node("div",null,"pills");
-  [difficulty[r.difficulty],(r.prep_minutes+r.cook_minutes)+"분",kinds[r.publication_kind]].forEach(s=>{
+  [groupLabels[foodGroup(r)]||"요리",...(r.style_tags||[]).map(t=>styleLabels[t]||t),difficulty[r.difficulty],(r.prep_minutes+r.cook_minutes)+"분",kinds[r.publication_kind]].forEach(s=>{
     tags.appendChild(node("span",s,"pill"));
   });
   article.appendChild(tags);
@@ -61,6 +99,7 @@ function recipeCard(r){
   article.appendChild(b);return article;
 }
 function render(){
+  syncShortcuts();
   const selected=catalog.recipes.filter(matches);
   $("recipe-count").textContent=selected.length+"개";
   $("recipe-list").replaceChildren(...selected.map(recipeCard));
@@ -86,13 +125,36 @@ function populateRecipe(r,servings){
   if(r.description)view.appendChild(node("p",r.description));
   const meta=node("div",null,"meta-grid");
   [regions[r.cuisine_regions[0]]||r.cuisine_regions[0],
+   groupLabels[foodGroup(r)]||"요리",...(r.style_tags||[]).map(t=>styleLabels[t]||t),
    (r.prep_minutes+r.cook_minutes)+"분(준비 "+r.prep_minutes+"분 / 조리 "+r.cook_minutes+"분)",
    "난이도 "+difficulty[r.difficulty],kinds[r.publication_kind]].forEach(t=>meta.appendChild(node("span",t,"recipe-chip")));
   view.appendChild(meta);
+  if(r.time_notes)view.appendChild(node("p","추가 대기시간: "+r.time_notes,"recipe-note"));
   const prov=node("div",null,"recipe-provenance");
   append(prov,node("strong","레시피 유형: "+kinds[r.publication_kind]),
     node("p","자료: "+r.source_credit.provider+" · 출처 검증일 "+r.source_credit.verified_at,"muted"));
   view.appendChild(prov);
+  const domesticOrForeign=r.source_credit.source_country?
+    (r.source_credit.source_country==="KR"?"국내":"해외")+" 출처 · "+r.source_credit.source_country+
+      (r.source_credit.language?" / "+r.source_credit.language:""):"";
+  if(domesticOrForeign)view.appendChild(node("p",domesticOrForeign,"recipe-note"));
+  if(r.cross_references?.length){
+    const cross=section(view,"국내·해외 참고 자료");
+    const ul=node("ul");
+    r.cross_references.forEach(v=>ul.appendChild(node("li",v.provider+" · "+v.source_country+
+      " / "+v.language+" · "+v.relation+" · 확인일 "+v.verified_at)));
+    cross.appendChild(ul);
+    cross.appendChild(node("p","별도 제공처의 조리법을 무단 혼합·복제하지 않았습니다. 각각의 출처를 확인하세요.","recipe-note"));
+  }
+  if(r.combo_products?.length){
+    const combos=section(view,"조합에 사용한 판매 제품");
+    const ul=node("ul");
+    r.combo_products.forEach(p=>ul.appendChild(node("li",(p.brand?p.brand+" · ":"")+p.product_name+
+      (p.package?" · "+p.package:"")+" · 제품 확인일 "+p.checked_at+
+      (p.substitution_note?" · "+p.substitution_note:""))));
+    combos.appendChild(ul);
+    combos.appendChild(node("p","판매·재고 및 제품 구성은 변동될 수 있습니다. 가열·보관은 반드시 상품 포장 안내를 확인하세요.","recipe-note"));
+  }
   const ingredients=section(view,"재료");
   const control=node("div",null,"serve-control");
   control.appendChild(node("label","인분 조절"));
@@ -146,8 +208,11 @@ function openRecipe(id){
   catalog.selected=id;populateRecipe(r,r.servings);
 }
 function closeRecipe(){catalog.selected=null;$("recipe-detail").hidden=true;$("recipe-detail").replaceChildren();}
-["recipe-keyword","recipe-region","recipe-category","recipe-minutes","recipe-media"].forEach(id=>{
-  $(id).addEventListener(id==="recipe-keyword"?"input":"change",render);
+["recipe-keyword","recipe-group","recipe-region","recipe-category","recipe-style","recipe-source","recipe-minutes","recipe-media"].forEach(id=>{
+  $(id).addEventListener(id==="recipe-keyword"?"input":"change",()=>{
+    if(id==="recipe-group")fillCategories();
+    render();
+  });
 });
 (async()=>{
   try{
@@ -156,6 +221,10 @@ function closeRecipe(){catalog.selected=null;$("recipe-detail").hidden=true;$("r
     const feed=await response.json();
     if(feed.schema_version!=="1.0"||!Array.isArray(feed.recipes))throw Error("Invalid public feed");
     catalog.recipes=feed.recipes;
+    try{
+      const taxonomyResponse=await fetch("./data/recipe-taxonomy.json");
+      if(taxonomyResponse.ok)taxonomy=await taxonomyResponse.json();
+    }catch(error){console.warn("Recipe taxonomy fallback:",error.message);}
     setupFilters();render();
     const target=params.get("recipe");
     if(target&&catalog.recipes.some(r=>r.recipe_id===target))openRecipe(target);
