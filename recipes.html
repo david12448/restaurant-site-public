@@ -18,10 +18,14 @@
 <main class="wrap">
   <section class="filter-panel" aria-label="레시피 검색 조건">
     <h2>오늘 만들 음식 찾기</h2>
+    <div id="recipe-shortcuts" class="recipe-shortcuts" aria-label="레시피 빠른 분류"></div>
     <div class="controls recipe-controls">
-      <label>음식 이름·재료 <input id="recipe-keyword" type="search" placeholder="예: 파스타, 두부, 비리야니" autocomplete="off"></label>
+      <label>음식 이름·재료·편의점 상품 <input id="recipe-keyword" type="search" placeholder="예: 짜파구리, 초콜릿, 바게트" autocomplete="off"></label>
+      <label>레시피 종류 <select id="recipe-group"><option value="">전체 레시피</option></select></label>
+      <label>세부 종류 <select id="recipe-category"><option value="">전체 종류</option></select></label>
       <label>음식권역 <select id="recipe-region"><option value="">전 세계</option></select></label>
-      <label>음식 종류 <select id="recipe-category"><option value="">모든 종류</option></select></label>
+      <label>변형·퓨전 <select id="recipe-style"><option value="">전체 스타일</option></select></label>
+      <label>국내·해외 자료 <select id="recipe-source"><option value="">모든 출처</option><option value="korean">국내</option><option value="foreign">해외</option><option value="mixed">국내·해외 비교</option></select></label>
       <label>조리 시간 <select id="recipe-minutes"><option value="">전체</option><option value="15">15분 이내</option><option value="30">30분 이내</option><option value="60">1시간 이내</option></select></label>
       <label>방송·영상 <select id="recipe-media"><option value="">전체</option><option value="broadcast">방송 관련</option><option value="youtube">요리 영상 연결</option></select></label>
     </div>
