@@ -65,5 +65,67 @@ class RecipeFeedTest(unittest.TestCase):
         self.assertEqual(validate(self.feed),1)
 
 
+
+    def test_extended_global_food_group_and_cross_references(self):
+        self.recipe["food_group"]="bread_baking"
+        self.recipe["food_subgroup"]="bread"
+        self.recipe["style_tags"]=["fusion"]
+        self.recipe["preparation_methods"]=["oven"]
+        self.recipe["source_credit"]["source_country"]="KR"
+        self.recipe["source_credit"]["language"]="ko"
+        self.recipe["cross_references"]=[
+            {"provider":"Official International Recipe Reference",
+             "source_country":"JP","language":"ja","relation":"comparison",
+             "verified_at":"2026-10-09"}]
+        self.assertEqual(validate(self.feed),1)
+
+    def test_group_subgroup_mismatch_rejected(self):
+        self.recipe["food_group"]="beverage"
+        self.recipe["food_subgroup"]="bread"
+        with self.assertRaises(ValueError):
+            validate(self.feed)
+
+    def test_unknown_remix_label_rejected(self):
+        self.recipe["style_tags"]=["unverified_trend"]
+        with self.assertRaises(ValueError):
+            validate(self.feed)
+
+    def test_combo_requires_two_real_product_descriptions(self):
+        self.recipe["food_group"]="convenience_combo"
+        self.recipe["food_subgroup"]="instant_noodles"
+        self.recipe["style_tags"]=["remix","convenience"]
+        self.recipe["combo_products"]=[
+            {"product_name":"가상 라면 A","checked_at":"2026-10-09"}]
+        with self.assertRaises(ValueError):
+            validate(self.feed)
+        self.recipe["combo_products"].append(
+            {"product_name":"가상 소스 B","checked_at":"2026-10-09"})
+        self.assertEqual(validate(self.feed),1)
+
+    def test_duplicate_combo_products_rejected(self):
+        self.recipe["food_group"]="convenience_combo"
+        product={"product_name":"가상 치즈","brand":"가상 브랜드",
+                 "checked_at":"2026-10-09"}
+        self.recipe["combo_products"]=[product,dict(product)]
+        with self.assertRaises(ValueError):
+            validate(self.feed)
+
+    def test_foreign_reference_invalid_country_rejected(self):
+        self.recipe["cross_references"]=[
+            {"provider":"Test Source","source_country":"한국",
+             "language":"ko","relation":"comparison","verified_at":"2026-10-09"}]
+        with self.assertRaises(ValueError):
+            validate(self.feed)
+
+    def test_self_parent_recipe_ref_rejected(self):
+        self.recipe["parent_recipe_id"]=self.recipe["recipe_id"]
+        with self.assertRaises(ValueError):
+            validate(self.feed)
+
+    def test_old_v1_recipe_has_backward_compatibility(self):
+        self.assertNotIn("food_group",self.recipe)
+        self.assertEqual(validate(self.feed),1)
+
+
 if __name__=="__main__":
     unittest.main()
