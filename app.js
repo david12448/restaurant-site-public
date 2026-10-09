@@ -143,6 +143,8 @@ function hideDetail() {state.selected=null;byId("detail").hidden=true;byId("deta
     state.restaurants=payload.restaurants;
     fillOptions();
     render();
+    const target = new URLSearchParams(location.search).get("restaurant");
+    if(target && state.restaurants.some(r=>r.restaurant_id===target))showDetail(target);
   }catch(error){
     byId("count").textContent="불러오기 실패";
     const empty=byId("empty");empty.hidden=false;
