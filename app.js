@@ -1,7 +1,7 @@
 "use strict";
 // Only approved feed reaches the browser. No collector, provider IDs or URLs.
 const byId = (id) => document.getElementById(id);
-const state = { restaurants: [], selected: null };
+const state = { restaurants: [], selected: null, routes: {} };
 const isEmbed = new URLSearchParams(location.search).get("embed") === "1";
 if (isEmbed) document.body.classList.add("embed");
 
@@ -62,7 +62,13 @@ function card(item) {
   else box.appendChild(el("p", "최근 정보 확인: " + (item.last_verified_at || "확인 필요"), "meta"));
   const btn = el("button","상세 정보 보기","button");
   btn.type="button"; btn.addEventListener("click",()=>showDetail(item.restaurant_id));
-  box.appendChild(btn); return box;
+  box.appendChild(btn);
+  if(state.routes[item.restaurant_id]){
+    const link=el("a","고정 주소로 보기","button");
+    link.href="./"+state.routes[item.restaurant_id];
+    box.appendChild(link);
+  }
+  return box;
 }
 function render() {
   const list=state.restaurants.filter(matches);
@@ -141,6 +147,14 @@ function hideDetail() {state.selected=null;byId("detail").hidden=true;byId("deta
     const payload=await response.json();
     if(payload.schema_version!=="1.0" || !Array.isArray(payload.restaurants))throw new Error("feed format");
     state.restaurants=payload.restaurants;
+    try{
+      const routeResponse=await fetch("./data/url-routes.json",{cache:"no-store"});
+      if(routeResponse.ok){
+        const publicRoutes=await routeResponse.json();
+        if(publicRoutes.schema_version==="1.0"&&publicRoutes.restaurants&&typeof publicRoutes.restaurants==="object")
+          state.routes=publicRoutes.restaurants;
+      }
+    }catch{state.routes={};}
     fillOptions();
     render();
     const target = new URLSearchParams(location.search).get("restaurant");
