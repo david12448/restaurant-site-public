@@ -43,8 +43,11 @@ function setupFilters(){
 }
 function fillCategories(){
   const group=$("recipe-group").value;
-  const values=unique(catalog.recipes.filter(r=>!group||foodGroup(r)===group).map(r=>r.category).filter(Boolean));
-  fill("recipe-category",values.map(v=>[v,v]),"전체 종류");
+  const custom=unique(catalog.recipes.filter(r=>!group||foodGroup(r)===group).map(r=>r.category).filter(Boolean));
+  const t=taxonomy?.groups.find(g=>g.id===group);
+  const fixed=(t?.subgroups||[]).map(x=>["subgroup:"+x.id,x.label]);
+  const named=custom.map(x=>["category:"+x,x]);
+  fill("recipe-category",[...fixed,...named],"전체 종류");
 }
 function renderShortcuts(groups){
   const panel=$("recipe-shortcuts");panel.replaceChildren();
@@ -75,7 +78,9 @@ function matches(r){
   if(q&&!phrase.includes(q))return false;
   if($("recipe-group").value&&foodGroup(r)!==$("recipe-group").value)return false;
   if($("recipe-region").value&&!(r.cuisine_regions||[]).includes($("recipe-region").value))return false;
-  if($("recipe-category").value&&r.category!==$("recipe-category").value)return false;
+  const subFilter=$("recipe-category").value;
+  if(subFilter.startsWith("subgroup:")&&r.food_subgroup!==subFilter.slice(9))return false;
+  if(subFilter.startsWith("category:")&&r.category!==subFilter.slice(9))return false;
   if($("recipe-style").value&&!(r.style_tags||[]).includes($("recipe-style").value))return false;
   if(!hasSourceScope(r,$("recipe-source").value))return false;
   const max=Number($("recipe-minutes").value);
