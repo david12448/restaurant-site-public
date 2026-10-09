@@ -17,6 +17,7 @@ jobs:
       - run: python -m unittest discover -s tests -v
       - run: python scripts/validate_public.py
       - run: python scripts/validate_recipes.py
+      - run: python scripts/build_public_routes.py
       - run: node --check app.js
       - run: node --check recipes.js
       - run: |
