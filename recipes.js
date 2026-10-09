@@ -44,7 +44,7 @@ function setupFilters(){
 function fillCategories(){
   const group=$("recipe-group").value;
   const custom=unique(catalog.recipes.filter(r=>!group||foodGroup(r)===group).map(r=>r.category).filter(Boolean));
-  const t=taxonomy?.groups.find(g=>g.id===group);
+  const t=taxonomy?.groups?.find(g=>g.id===group);
   const fixed=(t?.subgroups||[]).map(x=>["subgroup:"+x.id,x.label]);
   const named=custom.map(x=>["category:"+x,x]);
   fill("recipe-category",[...fixed,...named],"전체 종류");
