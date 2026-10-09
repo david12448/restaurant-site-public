@@ -11,3 +11,9 @@
 - 여행 서비스는 v1 `restaurant_id` + `destination_ids` + `nearby_spot_ids` 계약으로 데이터만 연결.
 - 편집글을 무단 복제하지 않음. 공개 정보를 완전히 F12에서 숨길 수는 없으며 내부 원본/수집자산을 애초에 전달하지 않는 게 핵심.
 - 자동 머지/배포 성공이라고 말하기 전 Actions 결과 직접 확인.
+
+## 레시피 화면 추가 규칙
+- 맛집 사이트 내부 `recipes.html`에 독립 탐색, `data/recipes.json`은 승인된 조리법만. 조리법 원문·사진·영상은 이용권 확인 이전 공개 금지.
+- `recipe_id`(조리법), `dish_id`(음식 개념), `restaurant_id`(식당)을 별도 유지하고 방송 소개를 레시피 완전 공개로 착각하지 않는다.
+- 공식 방송 레시피 vs 방송 참고 레시피/독자 창작을 구별, 단계·계량·인분 검증, 유튜브 metadata/링크만 적법하게 활용.
+- 소스 코드는 `docs/RECIPE_UI_AND_SOURCES.md`, schema `schema/recipe-feed.v1.schema.json` 확인, `python scripts/validate_recipes.py`로 게시 전 검사.
