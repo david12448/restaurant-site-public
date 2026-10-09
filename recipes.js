@@ -1,7 +1,7 @@
 "use strict";
 // Approved recipe feed only. Public IDs and approved YouTube IDs are not private collector keys.
 const $ = (id)=>document.getElementById(id);
-const catalog={recipes:[],selected:null};
+const catalog={recipes:[],selected:null,routes:{}};
 const regions={
   east_asia:"동아시아 · 한/중/일",southeast_asia:"동남아시아",
   south_asia:"남아시아 · 인도 등",west_asia_mena:"서아시아·아랍권·중동",
@@ -101,7 +101,12 @@ function recipeCard(r){
   article.appendChild(tags);
   article.appendChild(node("p","기본 "+r.servings+"인분 · 출처 검수 "+r.last_verified_at,"recipe-note"));
   const b=node("button","재료와 만드는 방법 보기","button");b.type="button";b.addEventListener("click",()=>openRecipe(r.recipe_id));
-  article.appendChild(b);return article;
+  article.appendChild(b);
+  if(catalog.routes[r.recipe_id]){
+    const link=node("a","개별 레시피 고정 주소","button");
+    link.href="./"+catalog.routes[r.recipe_id];article.appendChild(link);
+  }
+  return article;
 }
 function render(){
   syncShortcuts();
@@ -226,6 +231,15 @@ function closeRecipe(){catalog.selected=null;$("recipe-detail").hidden=true;$("r
     const feed=await response.json();
     if(feed.schema_version!=="1.0"||!Array.isArray(feed.recipes))throw Error("Invalid public feed");
     catalog.recipes=feed.recipes;
+    try{
+      const routeResponse=await fetch("./data/url-routes.json",{cache:"no-store"});
+      if(routeResponse.ok){
+        const routeData=await routeResponse.json();
+        if(routeData.schema_version==="1.0"&&routeData.recipes&&typeof routeData.recipes==="object"){
+          catalog.routes=routeData.recipes;
+        }
+      }
+    }catch{catalog.routes={};}
     try{
       const taxonomyResponse=await fetch("./data/recipe-taxonomy.json");
       if(taxonomyResponse.ok)taxonomy=await taxonomyResponse.json();
