@@ -10,7 +10,9 @@ RECIPE={"recipe_id","dish_id","title","original_name","description",
         "cuisine_regions","origin_countries","category","servings",
         "prep_minutes","cook_minutes","difficulty","ingredients","steps",
         "publication_kind","source_credit","last_verified_at",
-        "associated_restaurant_ids","broadcast_mentions","youtube_videos"}
+        "associated_restaurant_ids","broadcast_mentions","youtube_videos",
+        "food_group","food_subgroup","style_tags","preparation_methods",
+        "serving_unit","time_notes","parent_recipe_id","combo_products","cross_references"}
 REQUIRED={"recipe_id","dish_id","title","cuisine_regions","origin_countries",
           "category","servings","prep_minutes","cook_minutes","difficulty",
           "ingredients","steps","publication_kind","source_credit","last_verified_at"}
@@ -69,6 +71,10 @@ def validate(feed):
         stamp=dt.datetime.fromisoformat(feed["generated_at"].replace("Z","+00:00"))
         if stamp.tzinfo is None: raise ValueError("Export timestamp requires timezone")
     clean(feed)
+    taxonomy=json.loads((Path(__file__).resolve().parents[1]/"data/recipe-taxonomy.json").read_text(encoding="utf-8"))
+    groups={g["id"]: {i["id"] for i in g["subgroups"]} for g in taxonomy["groups"]}
+    styles={tag["id"] for tag in taxonomy["style_tags"]}
+    methods={tag["id"] for tag in taxonomy["preparation_methods"]}
     seen=set()
     for item in feed["recipes"]:
         fields(item,RECIPE,REQUIRED)
@@ -90,13 +96,65 @@ def validate(feed):
             raise ValueError("Servings exceed approved limit")
         if item["publication_kind"] not in ("official_source","adaptation","broadcast_inspired","editorial_original"):
             raise ValueError("Publication kind unsupported")
-        credit=fields(item["source_credit"],{"provider","license_verified","verified_at"},
+        credit=fields(item["source_credit"],{"provider","license_verified","verified_at","source_country","language"},
                       {"provider","license_verified","verified_at"})
         text(credit["provider"])
         if credit["license_verified"] is not True:
             raise ValueError("Recipe reuse rights not approved")
         date(credit["verified_at"])
         date(item["last_verified_at"])
+        group=item.get("food_group","meal")
+        if group not in groups:
+            raise ValueError("Unknown recipe food group")
+        if "food_subgroup" in item and item["food_subgroup"] not in groups[group]:
+            raise ValueError("Subgroup does not belong to food group")
+        for field, allowed in (("style_tags",styles),("preparation_methods",methods)):
+            string_array(item.get(field, []))
+            if not set(item.get(field,[])) <= allowed:
+                raise ValueError("Unknown recipe tag: "+field)
+        if "serving_unit" in item and item["serving_unit"] not in ("serving","piece","cup","batch"):
+            raise ValueError("Invalid portion unit")
+        if "time_notes" in item and (not isinstance(item["time_notes"],str) or len(item["time_notes"])>300):
+            raise ValueError("Invalid timing note")
+        if "parent_recipe_id" in item and (not isinstance(item["parent_recipe_id"],str) or
+            not ID.fullmatch(item["parent_recipe_id"]) or item["parent_recipe_id"]==item["recipe_id"]):
+            raise ValueError("Invalid recipe derivation link")
+        products=item.get("combo_products", [])
+        if not isinstance(products,list):
+            raise ValueError("Invalid convenience combo products")
+        if group=="convenience_combo" and len(products)<2:
+            raise ValueError("A convenience combo needs at least two documented products")
+        if products and group!="convenience_combo":
+            raise ValueError("Packaged convenience components require convenience_combo food_group")
+        seen_products=set()
+        for component in products:
+            fields(component,{"product_name","brand","package","checked_at","substitution_note"},
+                   {"product_name","checked_at"})
+            text(component["product_name"])
+            date(component["checked_at"])
+            if any(not isinstance(component.get(k),str) for k in ("brand","package","substitution_note") if k in component):
+                raise ValueError("Invalid brand or package notes")
+            product_key=(component.get("brand","").casefold(),component["product_name"].casefold())
+            if product_key in seen_products:
+                raise ValueError("Duplicated packaged component")
+            seen_products.add(product_key)
+        for field in ("source_country", "language"):
+            if field in credit:
+                value=credit[field]
+                rule=r"^[A-Z]{2}$" if field=="source_country" else r"^[a-z]{2,3}(?:-[A-Za-z0-9]+)*$"
+                if not isinstance(value,str) or not re.fullmatch(rule,value):
+                    raise ValueError("Invalid source locale")
+        for other in item.get("cross_references", []):
+            fields(other,{"provider","source_country","language","relation","verified_at"},
+                   {"provider","source_country","language","relation","verified_at"})
+            text(other["provider"])
+            if not isinstance(other["source_country"],str) or not re.fullmatch(r"[A-Z]{2}",other["source_country"]):
+                raise ValueError("Invalid foreign reference country")
+            if not isinstance(other["language"],str) or not re.fullmatch(r"[a-z]{2,3}(?:-[A-Za-z0-9]+)*",other["language"]):
+                raise ValueError("Invalid foreign reference language")
+            if other["relation"] not in ("comparison","inspiration","supporting"):
+                raise ValueError("Unknown cross-source relation")
+            date(other["verified_at"])
         if not isinstance(item["ingredients"],list) or not item["ingredients"]:
             raise ValueError("Ingredients missing")
         for ing in item["ingredients"]:

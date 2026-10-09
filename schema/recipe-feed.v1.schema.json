@@ -188,6 +188,14 @@
             "verified_at": {
               "type": "string",
               "format": "date"
+            },
+            "source_country": {
+              "type": "string",
+              "pattern": "^[A-Z]{2}$"
+            },
+            "language": {
+              "type": "string",
+              "pattern": "^[a-z]{2,3}(-[A-Za-z0-9]+)*$"
             }
           }
         },
@@ -258,6 +266,146 @@
               "channel": {
                 "type": "string",
                 "minLength": 1
+              },
+              "verified_at": {
+                "type": "string",
+                "format": "date"
+              }
+            }
+          }
+        },
+        "food_group": {
+          "type": "string",
+          "enum": [
+            "meal",
+            "bread_baking",
+            "dessert",
+            "frozen_dessert",
+            "beverage",
+            "convenience_combo"
+          ],
+          "description": "Optional for backward-compatible v1 consumers. New entries must specify a group."
+        },
+        "food_subgroup": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 70
+        },
+        "style_tags": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "traditional",
+              "fusion",
+              "remix",
+              "home_style",
+              "quick_easy",
+              "convenience"
+            ]
+          }
+        },
+        "preparation_methods": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "stovetop",
+              "oven",
+              "air_fryer",
+              "microwave",
+              "no_cook",
+              "freezer",
+              "other"
+            ]
+          }
+        },
+        "serving_unit": {
+          "type": "string",
+          "enum": [
+            "serving",
+            "piece",
+            "cup",
+            "batch"
+          ]
+        },
+        "time_notes": {
+          "type": "string",
+          "maxLength": 300
+        },
+        "parent_recipe_id": {
+          "type": "string",
+          "pattern": "^rcp_[A-Za-z0-9_-]{6,80}$"
+        },
+        "combo_products": {
+          "type": "array",
+          "minItems": 2,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "product_name",
+              "checked_at"
+            ],
+            "properties": {
+              "product_name": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 130
+              },
+              "brand": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 90
+              },
+              "package": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 90
+              },
+              "checked_at": {
+                "type": "string",
+                "format": "date"
+              },
+              "substitution_note": {
+                "type": "string",
+                "maxLength": 250
+              }
+            }
+          }
+        },
+        "cross_references": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "provider",
+              "source_country",
+              "language",
+              "relation",
+              "verified_at"
+            ],
+            "properties": {
+              "provider": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 130
+              },
+              "source_country": {
+                "type": "string",
+                "pattern": "^[A-Z]{2}$"
+              },
+              "language": {
+                "type": "string",
+                "pattern": "^[a-z]{2,3}(-[A-Za-z0-9]+)*$"
+              },
+              "relation": {
+                "enum": [
+                  "comparison",
+                  "inspiration",
+                  "supporting"
+                ]
               },
               "verified_at": {
                 "type": "string",

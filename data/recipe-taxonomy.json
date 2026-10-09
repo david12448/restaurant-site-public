@@ -1,0 +1,207 @@
+{
+  "schema_version": "1.0",
+  "groups": [
+    {
+      "id": "meal",
+      "label": "요리·식사",
+      "subgroups": [
+        {
+          "id": "rice_noodles",
+          "label": "밥·면"
+        },
+        {
+          "id": "soup_stew",
+          "label": "국·탕·찌개"
+        },
+        {
+          "id": "main_dish",
+          "label": "메인 요리"
+        },
+        {
+          "id": "side_dish",
+          "label": "반찬·샐러드"
+        }
+      ]
+    },
+    {
+      "id": "bread_baking",
+      "label": "빵·베이킹",
+      "subgroups": [
+        {
+          "id": "bread",
+          "label": "식빵·바게트"
+        },
+        {
+          "id": "pastry",
+          "label": "크루아상·페이스트리"
+        },
+        {
+          "id": "cookie",
+          "label": "쿠키·스콘"
+        },
+        {
+          "id": "savory_baking",
+          "label": "피자빵·간식빵"
+        }
+      ]
+    },
+    {
+      "id": "dessert",
+      "label": "초콜릿·디저트",
+      "subgroups": [
+        {
+          "id": "chocolate",
+          "label": "초콜릿·트러플"
+        },
+        {
+          "id": "cake",
+          "label": "케이크"
+        },
+        {
+          "id": "pudding",
+          "label": "푸딩·무스"
+        },
+        {
+          "id": "traditional_sweet",
+          "label": "전통 디저트"
+        }
+      ]
+    },
+    {
+      "id": "frozen_dessert",
+      "label": "아이스크림·빙수",
+      "subgroups": [
+        {
+          "id": "ice_cream",
+          "label": "아이스크림·젤라토"
+        },
+        {
+          "id": "sorbet",
+          "label": "셔벗"
+        },
+        {
+          "id": "shaved_ice",
+          "label": "빙수"
+        },
+        {
+          "id": "frozen_bar",
+          "label": "아이스바"
+        }
+      ]
+    },
+    {
+      "id": "beverage",
+      "label": "음료",
+      "subgroups": [
+        {
+          "id": "coffee",
+          "label": "커피·라테"
+        },
+        {
+          "id": "tea",
+          "label": "차"
+        },
+        {
+          "id": "smoothie",
+          "label": "스무디·쉐이크"
+        },
+        {
+          "id": "juice_ade",
+          "label": "주스·에이드"
+        }
+      ]
+    },
+    {
+      "id": "convenience_combo",
+      "label": "편의점 꿀조합",
+      "subgroups": [
+        {
+          "id": "instant_noodles",
+          "label": "컵라면·즉석면"
+        },
+        {
+          "id": "rice_combo",
+          "label": "삼각김밥·도시락"
+        },
+        {
+          "id": "snack_combo",
+          "label": "과자·치즈 조합"
+        },
+        {
+          "id": "dessert_combo",
+          "label": "편의점 디저트 조합"
+        }
+      ]
+    }
+  ],
+  "style_tags": [
+    {
+      "id": "traditional",
+      "label": "전통 음식"
+    },
+    {
+      "id": "fusion",
+      "label": "퓨전"
+    },
+    {
+      "id": "remix",
+      "label": "변형·응용"
+    },
+    {
+      "id": "home_style",
+      "label": "가정식"
+    },
+    {
+      "id": "quick_easy",
+      "label": "간편식"
+    },
+    {
+      "id": "convenience",
+      "label": "편의점 조합"
+    }
+  ],
+  "preparation_methods": [
+    {
+      "id": "stovetop",
+      "label": "가열 조리"
+    },
+    {
+      "id": "oven",
+      "label": "오븐"
+    },
+    {
+      "id": "air_fryer",
+      "label": "에어프라이어"
+    },
+    {
+      "id": "microwave",
+      "label": "전자레인지"
+    },
+    {
+      "id": "no_cook",
+      "label": "비가열"
+    },
+    {
+      "id": "freezer",
+      "label": "냉동·냉각"
+    },
+    {
+      "id": "other",
+      "label": "기타"
+    }
+  ],
+  "source_scopes": [
+    {
+      "id": "korean",
+      "label": "국내 자료"
+    },
+    {
+      "id": "foreign",
+      "label": "해외 자료"
+    },
+    {
+      "id": "mixed",
+      "label": "국내·해외 비교"
+    }
+  ]
+}

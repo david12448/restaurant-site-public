@@ -27,3 +27,12 @@
 
 ## 현 단계
 완성된 공개 페이지 코드는 도입하지만 공식 레시피 실데이터 수집과 원문/사진 게시 허가 검증은 아직 진행되지 않았다. 출처 리뷰 후 승인된 레시피가 들어오면 단계별 UI가 작동한다.
+
+## 레시피 범위 2차 확장 — 2026-10-09
+- `food_group` : meal, bread_baking, dessert, frozen_dessert, beverage, convenience_combo. taxonomy(JSON)의 한국어 탭 레이블과 food_subgroup 분류를 사용.
+- `style_tags`: traditional, fusion, remix, home_style, quick_easy, convenience. 큰 분류와 별도 필터.
+- 출처국 `source_credit.source_country` / `cross_references`는 음식의 원산지를 뜻하지 않는다. KR과 외국이 함께 있으면 국내·해외 비교 필터에 나타낸다.
+- 편의점 조합은 `combo_products`가 2개 이상 확인되어야 함. 각각 브랜드(있을 때)·상품명·포장/검증일 표시, 현재 재고가 있음을 암시하지 않는다.
+- `serving_unit`/냉각·발효 `time_notes`는 케이크·아이스크림·음료의 단위/시간 혼동을 줄임.
+- 신규 필드는 v1에서 선택적이므로 기존 승인 레시피를 파괴하지 않는다. 새 레시피는 반드시 food_group을 지정하는 편집 정책 유지.
+- 레시피 출처 원문 무단 복사 금지, 해외 출처/원문/사진은 권리 검토 후. 공개용 카테고리/가이드만 승인, 실제 레시피는 0건 유지.
