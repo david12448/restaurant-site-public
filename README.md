@@ -16,3 +16,11 @@
 실제 인허가 상태/방송/리뷰/주차 데이터의 수집과 검증은 `restaurant-source-private`에만 존재. `restaurant_id` / `destination_ids` / `nearby_spot_ids`는 여행 서비스와 호환하도록 유지.
 
 **상태:** 사이트 코드 개발 중; 라이브 맛집 수집 및 서비스 배포 확인 전.
+
+## 레시피 영역 (신규)
+- `recipes.html`: 세계 음식권역/재료/시간/방송 연관 필터 및 주문형 조리 단계 표시
+- `data/recipes.json`: 공개 승인된 레시피만 (현재 0건)
+- `schema/recipe-feed.v1.schema.json`: 음식 dish_id, 조리법 recipe_id, 구조화된 조리 단계, 편집 상태와 출처 검수.
+- `scripts/validate_recipes.py`: 원본 URL·출처 키 등 공개 금지, 사용권 미승인·단계 오류의 발행 거부.
+- 인분 조정은 계량치만; 실제 열처리 시간 등은 자동 보증하지 않음.
+- `python scripts/validate_recipes.py` 후 `python -m unittest discover -s tests -v`로 점검.
